@@ -46,9 +46,8 @@ export default function UserList() {
         setShowCreate(false);
     }
 
-    const userInfoClickHandler = (userId) => {
+    const userInfoClickHandler = async (userId) => {
         setUserIdInfo(userId);
-        
     }
 
     const closeUserInfoClickHandler = () => {
@@ -70,6 +69,7 @@ export default function UserList() {
             {userIdInfo && (
                     <UserInfo
                          onClose={closeUserInfoClickHandler}
+                         userId={userIdInfo}
                     />
                     )}
 
