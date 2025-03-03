@@ -7,11 +7,13 @@ import Search from "./Search";
 import UserListItem from "./UserListItem";
 import UserCreate from "./UserCreate";
 import UserInfo from "./UserInfo";
+import UserDelete from "./UserDelete";
 
 export default function UserList() {
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const [userIdInfo, setUserIdInfo] = useState(null);
+    const [userIdDelete, setUserIdDelete] = useState(null);
 
     useEffect(() => {
         userService.getAll()
@@ -54,6 +56,25 @@ export default function UserList() {
         setUserIdInfo(null);
     }
 
+    const userDeleteClickHandler = (userId) => {
+        setUserIdDelete(userId);
+    }
+ 
+    const closeUserDeleteClickHandler = () => {
+        setUserIdDelete(null);
+    }
+    
+    const userDeleteHandler = async (userId) => {
+        //delete user
+        const delUser = await userService.delete(userId);
+        
+        //delete from local state
+        setUsers(state => state.filter(user => user._id !== delUser._id));
+
+        //close modal
+        setUserIdDelete(null);
+    }
+
     return (
         <section className="card users-container">
 
@@ -72,6 +93,14 @@ export default function UserList() {
                          userId={userIdInfo}
                     />
                     )}
+
+            {userIdDelete && (
+                <UserDelete
+                    onDelete={userDeleteHandler}
+                    onClose={closeUserDeleteClickHandler}
+                    userId={userIdDelete}
+                 />)
+                 }
 
 			<div className="table-wrapper">
                 <div className="overlays">
@@ -191,6 +220,7 @@ export default function UserList() {
                              key={user._id}
                              _id={user._id}
                              onInfoClick={userInfoClickHandler}
+                             onDeleteClick={userDeleteClickHandler}
                              {...user}
                               />)}
 
