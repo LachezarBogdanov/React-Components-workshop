@@ -26,12 +26,34 @@ export default function UserList() {
         setShowCreate(false);
     }
 
+    const saveCreateUserClickHandler = async (e) => {
+        //prevent default refresh
+        e.preventDefault();
+
+        //get form data
+        const form = new FormData(e.target);
+        const formData = Object.fromEntries(form);
+
+        //post req on server
+        const newUser = await userService.create(formData);
+
+        //update state
+        setUsers(state => [...state, newUser]);
+
+        //close modal
+        setShowCreate(false);
+    }
+
     return (
         <section className="card users-container">
 
             <Search />
 
-            {showCreate && <UserCreate onClose={closeCreateUserClickHandler} />}
+            {showCreate && (
+                    <UserCreate 
+                        onClose={closeCreateUserClickHandler}
+                        onSave={saveCreateUserClickHandler}
+                    />)}
 
 			<div className="table-wrapper">
                 <div className="overlays">
