@@ -11,6 +11,7 @@ import UserDelete from "./UserDelete";
 
 export default function UserList() {
     const [users, setUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState(users);
     const [showCreate, setShowCreate] = useState(false);
     const [userIdInfo, setUserIdInfo] = useState(null);
     const [userIdDelete, setUserIdDelete] = useState(null);
@@ -20,6 +21,7 @@ export default function UserList() {
         userService.getAll()
                 .then(result => {
                     setUsers(result);
+                    setAllUsers(result);
                 })
     }, []);
 
@@ -100,10 +102,25 @@ export default function UserList() {
         setUserIdEdit(null);
     }
 
+    const handleSearch = (searchText, criteria) => {
+        if(!searchText || !criteria) {
+            return setUsers(allUsers);
+        }
+
+        setAllUsers(prevUsers => prevUsers.filter((user) => user[criteria]?.toLowerCase().includes(searchText.toLowerCase())));
+    }
+
+    const handleClear = () => {
+        setAllUsers(users);
+    }
+
     return (
         <section className="card users-container">
 
-            <Search />
+            <Search
+                onSearch={handleSearch} 
+                onClear={handleClear}
+            />
 
             {showCreate && (
                     <UserCreate 
@@ -250,7 +267,7 @@ export default function UserList() {
 				</thead>
 				<tbody>
 
-                    {users.map(user => <UserListItem
+                    {allUsers.map(user => <UserListItem
                              key={user._id}
                              _id={user._id}
                              onInfoClick={userInfoClickHandler}
