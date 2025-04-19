@@ -107,11 +107,40 @@ export default function UserList() {
             return setUsers(allUsers);
         }
 
+        console.log(allUsers);
+        
         setAllUsers(prevUsers => prevUsers.filter((user) => user[criteria]?.toLowerCase().includes(searchText.toLowerCase())));
     }
 
     const handleClear = () => {
         setAllUsers(users);
+    }
+
+    const handleSortByCriteria = (criteria) => {
+        switch (criteria) {
+            case 'firstName':
+                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.firstName.localeCompare(b.firstName)));
+                break;
+
+            case 'lastName':
+                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.lastName.localeCompare(b.lastName)));
+                break;
+
+            case 'email':
+                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.email.localeCompare(b.email)));
+                break;
+
+            case 'phoneNumber':
+                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.phoneNumber - b.phoneNumber));
+                break;
+
+            case 'createdAt':
+                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+                break;
+            default:
+                setAllUsers(users);
+                break;
+        }        
     }
 
     return (
@@ -216,7 +245,7 @@ export default function UserList() {
 					<th>
 						Image
 					</th>
-					<th>
+					<th onClick={() => handleSortByCriteria('firstName')}>
 						First name<svg aria-hidden="true" focusable="false" data-prefix="fas"
 						data-icon="arrow-down" className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
 						xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -225,7 +254,7 @@ export default function UserList() {
 						</path>
 						</svg>
 					</th>
-					<th>
+					<th onClick={() => handleSortByCriteria('lastName')}>
 						Last name<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
 						className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 384 512">
@@ -234,7 +263,7 @@ export default function UserList() {
 						</path>
 						</svg>
 					</th>
-					<th>
+					<th onClick={() => handleSortByCriteria('email')}>
 						Email<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
 						className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 384 512">
@@ -243,7 +272,7 @@ export default function UserList() {
 						</path>
 						</svg>
 					</th>
-					<th>
+					<th onClick={() => handleSortByCriteria('phoneNumber')}>
 						Phone<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
 						className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 384 512">
@@ -252,7 +281,7 @@ export default function UserList() {
 						</path>
 						</svg>
 					</th>
-					<th>
+					<th onClick={() => handleSortByCriteria('createdAt')}>
 						Created
 						<svg aria-hidden="true" focusable="false" data-prefix="fas"
 						data-icon="arrow-down" className="icon active-icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
