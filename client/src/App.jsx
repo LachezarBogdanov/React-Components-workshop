@@ -2,6 +2,7 @@ import './App.css'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import UserList from './components/UserList'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
 
@@ -9,21 +10,9 @@ function App() {
     <>
 		<Header />
 
-		{/* <!-- Main component  --> */}
 		<main className="main">
-			{/* <!-- Section component  --> */}
+			<ToastContainer />
 			<UserList />
-
-			{/* <!-- User details component  --> */}
-			
-
-
-			{/* <!-- Create/Edit Form component  --> */}
-			
-
-
-			{/* <!-- Delete user component  --> */}
-			
 
 		</main>
 
