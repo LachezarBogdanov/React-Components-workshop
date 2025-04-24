@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import userService from "../services/userService";
 
@@ -19,20 +19,27 @@ export default function UserList() {
     const [userIdEdit, setUserIdEdit] = useState(null);
     const [failedToFetch, setFailedToFetch] = useState(false);
 
+    
     useEffect(() => {
-
-            userService.getAll()
-            .then(result => {
-                setUsers(result);
-                setAllUsers(result);
-            })
+        
+        userService.getAll()
+        .then(result => {
+            setUsers(result);
+            setAllUsers(result);
+        })
             .catch((err) => {
                 toast.error(err.message);
                 setFailedToFetch(true);
                 
             })
-       
-    }, []);
+            
+        }, []);
+        
+        
+        const onUsersCountPaginationChange = (curUsers) => {
+            setUsers(curUsers);
+            setAllUsers(curUsers);
+        };
 
     const createUserClickHandler = () => {
         setShowCreate(true);
@@ -56,6 +63,7 @@ export default function UserList() {
 
         //update state
         setUsers(state => [...state, newUser]);
+        setAllUsers(state => [...state, newUser]);
 
         //close modal
         setShowCreate(false);
@@ -353,7 +361,10 @@ export default function UserList() {
 			<button className="btn-add btn" onClick={createUserClickHandler}>Add new user</button>
 
 			{/* <!-- Pagination component  --> */}
-			<Pagination />
+			<Pagination
+                users={allUsers}
+                onPagChange={onUsersCountPaginationChange}
+            />
 			</section>
     );
 }

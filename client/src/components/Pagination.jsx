@@ -1,16 +1,44 @@
-export default function Pagination() {
+import { useEffect, useMemo, useState } from "react";
+// import userService from "../services/userService";
+
+export default function Pagination({
+	users,
+	onPagChange
+}) {
+	const [curPage, setCurPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5);
+  
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+//   useEffect(() => {
+//     const startIndex = (curPage - 1) * usersPerPage;
+//     const endIndex = startIndex + usersPerPage;
+//     const slicedUsers = users.slice(startIndex, endIndex);
+//     onPagChange(slicedUsers); 
+//   }, [curPage, usersPerPage, users, onPagChange]);
+
+  const handleUsersPerPageChange = (e) => {
+    setUsersPerPage(Number(e.target.value));
+    setCurPage(1);
+  };
+
     return (
         <div className="pagination position">
 				<div className="limits">
 				<span>Items per page:</span>
-				<select name="limit" className="limit" defaultValue="5">
-					<option value="5">5</option>
-					<option value="5">10</option>
-					<option value="5">15</option>
-					<option value="5">20</option>
+				<select
+					name="limit"
+					className="limit"
+					value={usersPerPage}
+					onChange={handleUsersPerPageChange}
+				>
+					<option value={5}>5</option>
+					<option value={10}>10</option>
+					<option value={15}>15</option>
+					<option value={20}>20</option>
 				</select>
 				</div>
-				<p className="pages">1 - 1 of 1</p>
+				<p className="pages">1 - 1 of {totalPages}</p>
 				<div className="actions">
 				<button className="btn" title="First Page">
 					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angles-left"
