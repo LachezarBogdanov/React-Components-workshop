@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-// import userService from "../services/userService";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Pagination({
 	users,
@@ -9,18 +8,23 @@ export default function Pagination({
   const [usersPerPage, setUsersPerPage] = useState(5);
   
   const totalPages = Math.ceil(users.length / usersPerPage);
-
-//   useEffect(() => {
-//     const startIndex = (curPage - 1) * usersPerPage;
-//     const endIndex = startIndex + usersPerPage;
-//     const slicedUsers = users.slice(startIndex, endIndex);
-//     onPagChange(slicedUsers); 
-//   }, [curPage, usersPerPage, users, onPagChange]);
+  const handleUsersSlice = useCallback((slicedUsers) => {
+	  onPagChange(slicedUsers);
+  }, [onPagChange]);
 
   const handleUsersPerPageChange = (e) => {
-    setUsersPerPage(Number(e.target.value));
-    setCurPage(1);
+	setUsersPerPage(Number(e.target.value));
+	setCurPage(1);
   };
+
+//   useEffect(() => {
+// 	  const startIndex = (curPage - 1) * usersPerPage;
+// 	  const endIndex = startIndex + usersPerPage;
+// 	  const slicedUsers = users.slice(startIndex, endIndex);
+
+// 	  handleUsersSlice(slicedUsers);
+//   }, [curPage, users, usersPerPage, handleUsersSlice]);
+
 
     return (
         <div className="pagination position">

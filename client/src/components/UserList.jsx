@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import userService from "../services/userService";
 
@@ -11,21 +11,21 @@ import UserDelete from "./UserDelete";
 import { toast } from 'react-toastify'
 
 export default function UserList() {
-    const [users, setUsers] = useState([]);
-    const [allUsers, setAllUsers] = useState(users);
     const [showCreate, setShowCreate] = useState(false);
     const [userIdInfo, setUserIdInfo] = useState(null);
     const [userIdDelete, setUserIdDelete] = useState(null);
     const [userIdEdit, setUserIdEdit] = useState(null);
     const [failedToFetch, setFailedToFetch] = useState(false);
+    const [curUsers, setCurrentUsers] = useState([]);
+    const [baseUsers, setBaseUsers] = useState(curUsers);
 
     
     useEffect(() => {
         
         userService.getAll()
         .then(result => {
-            setUsers(result);
-            setAllUsers(result);
+            setCurrentUsers(result);
+            setBaseUsers(result);
         })
             .catch((err) => {
                 toast.error(err.message);
@@ -37,8 +37,8 @@ export default function UserList() {
         
         
         const onUsersCountPaginationChange = (curUsers) => {
-            setUsers(curUsers);
-            setAllUsers(curUsers);
+            setCurrentUsers(curUsers);
+            setBaseUsers(curUsers);
         };
 
     const createUserClickHandler = () => {
@@ -62,8 +62,8 @@ export default function UserList() {
         const newUser = await userService.create(formData);
 
         //update state
-        setUsers(state => [...state, newUser]);
-        setAllUsers(state => [...state, newUser]);
+        setCurrentUsers(prevUsers => [...prevUsers, newUser]);
+        setBaseUsers(prevUsers => [...prevUsers, newUser]);
 
         //close modal
         setShowCreate(false);
@@ -90,7 +90,8 @@ export default function UserList() {
         const delUser = await userService.delete(userId);
         
         //delete from local state
-        setUsers(state => state.filter(user => user._id !== delUser._id));
+        setCurrentUsers(state => state.filter(user => user._id !== delUser._id));
+        setBaseUsers(state => state.filter(user => user._id !== delUser._id));
 
         //close modal
         setUserIdDelete(null);
@@ -113,7 +114,8 @@ export default function UserList() {
         const updatedUser = await userService.update(userId, formData);
 
         //update local state
-        setUsers(state => state.map(user => user._id === userId ? updatedUser : user));
+        setCurrentUsers(state => state.map(user => user._id === userId ? updatedUser : user));
+        setBaseUsers(state => state.map(user => user._id === userId ? updatedUser : user));
 
         //close modal
         setUserIdEdit(null);
@@ -121,42 +123,41 @@ export default function UserList() {
 
     const handleSearch = (searchText, criteria) => {
         if(!searchText || !criteria) {
-            return setUsers(allUsers);
+            return curUsers
         }
 
-       const searchUsers = allUsers.filter((user) => user[criteria]?.toLowerCase().includes(searchText.toLowerCase()))
+       const searchUsers = curUsers.filter((user) => user[criteria]?.toLowerCase().includes(searchText.toLowerCase()))
         
-       setAllUsers(searchUsers);
+       setCurrentUsers(searchUsers);
         
     }
 
     const handleClear = () => {
-        setAllUsers(users);
+        return setCurrentUsers(baseUsers);
     }
 
     const handleSortByCriteria = (criteria) => {
         switch (criteria) {
             case 'firstName':
-                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.firstName.localeCompare(b.firstName)));
+                setCurrentUsers(prevUsers => [...prevUsers].sort((a, b) => a.firstName.localeCompare(b.firstName)));
                 break;
 
             case 'lastName':
-                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.lastName.localeCompare(b.lastName)));
+                setCurrentUsers(prevUsers => [...prevUsers].sort((a, b) => a.lastName.localeCompare(b.lastName)));
                 break;
 
             case 'email':
-                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.email.localeCompare(b.email)));
+                setCurrentUsers(prevUsers => [...prevUsers].sort((a, b) => a.email.localeCompare(b.email)));
                 break;
 
             case 'phoneNumber':
-                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => a.phoneNumber - b.phoneNumber));
+                setCurrentUsers(prevUsers => [...prevUsers].sort((a, b) => a.phoneNumber - b.phoneNumber));
                 break;
 
             case 'createdAt':
-                setAllUsers(prevUsers => [...prevUsers].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+                setCurrentUsers(prevUsers => [...prevUsers].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
                 break;
             default:
-                setAllUsers(users);
                 break;
         }        
     }
@@ -289,11 +290,11 @@ export default function UserList() {
                          </div>
                     ) : (
 
-                        users.length > 0 ? (
-                        allUsers.length !== 0 ? (
+                        curUsers.length > 0 ? (
+                            curUsers.length !== 0 ? (
 
-                            users ? (
-                                allUsers.map(user => <UserListItem
+                                curUsers ? (
+                                    curUsers.map(user => <UserListItem
                                     key={user._id}
                                     _id={user._id}
                                     onInfoClick={userInfoClickHandler}
@@ -362,7 +363,7 @@ export default function UserList() {
 
 			{/* <!-- Pagination component  --> */}
 			<Pagination
-                users={allUsers}
+                users={curUsers}
                 onPagChange={onUsersCountPaginationChange}
             />
 			</section>
